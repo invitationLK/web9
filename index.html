@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy New Year 2026 | Cheers</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --indigo: #4B0082;
+            --champagne-gold: #F1D592;
+            --gold: linear-gradient(to right, #BF953F, #F1D592, #A4823B, #F1D592, #BF953F);
+            --daraz-orange: #f85606;
+            --white: #FFFFFF;
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-strong: rgba(255, 255, 255, 0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #050510;
+            color: var(--white);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Fireworks Background System */
+        #fw-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Float Parallax Stars */
+        #star-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.6; box-shadow: 0 0 10px #fff; }
+
+        /* Modern Hero with One Verified Wide-Angle Image */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 10%;
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Subtle Fade Effect for the Hero Image */
+        .hero-image-container {
+            width: 100%;
+            max-width: 1000px;
+            height: 450px;
+            margin-bottom: 40px;
+            border-radius: 40px;
+            overflow: hidden;
+            border: 1px solid rgba(241, 213, 146, 0.2);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            
+            /* Initial State for Fade Intersection */
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1.5s cubic-bezier(0.23, 1, 0.32, 1), transform 1.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* Revealed State */
+        .hero-image-container.revealed { opacity: 1; transform: translateY(0); }
+
+        .hero-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.85);
+        }
+
+        .gold-text {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 10vw, 6.5rem);
+            background: var(--gold);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 5s linear infinite;
+        }
+
+        @keyframes shine { to { background-position: 200% center; } }
+
+        .main-wish {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.5rem;
+            max-width: 800px;
+            margin-top: 25px;
+            color: #F1D592;
+            opacity: 0.95;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        /* Voucher Section Before Reply Board */
+        .gift-section { padding: 80px 10%; text-align: center; z-index: 10; position: relative; }
+        
+        /* Highlighted Gift Card: Prominent drop shadow and Gold Glowing Border */
+        .voucher {
+            background: #fff;
+            color: #333;
+            width: 100%;
+            max-width: 580px;
+            border-radius: 30px;
+            display: flex;
+            margin: 0 auto;
+            overflow: hidden;
+            border: 2px solid var(--champagne-gold); /* Prominent border */
+            box-shadow: 0 35px 70px rgba(248, 86, 6, 0.3), 0 0 30px rgba(241, 213, 146, 0.2); /* Combined deep shadow and subtle gold glow */
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .voucher:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 45px 90px rgba(248, 86, 6, 0.4), 0 0 40px rgba(241, 213, 146, 0.3); }
+
+        .voucher-left {
+            background: var(--daraz-orange);
+            color: white;
+            padding: 50px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-right: 4px dashed #eee;
+        }
+
+        .voucher-right { padding: 40px; flex-grow: 1; text-align: left; }
+        .voucher-logo { font-weight: 900; font-size: 2.2rem; letter-spacing: -1.5px; line-height: 1; }
+        
+        /* New Voucher Message */
+        .voucher-msg {
+            font-size: 1rem;
+            color: #555;
+            margin-top: 15px;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        .voucher-code {
+            display: block;
+            margin-top: 25px;
+            padding: 18px;
+            background: #FFF5F0;
+            border: 2px dashed var(--daraz-orange);
+            text-align: center;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--daraz-orange);
+            letter-spacing: 3px;
+            cursor: pointer;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .voucher-code:hover { background: #fee7d9; transform: scale(1.02); }
+        .voucher-code::after { content: "Click to Copy"; position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-family: 'Poppins'; font-size: 0.7rem; color: #f85606; opacity: 0.7; }
+
+        /* Interaction Section: Reply Wish (Frosted Glass Effect) */
+        .wish-section { padding: 80px 10% 150px; text-align: center; z-index: 10; position: relative; }
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px); /* Ensure compatibility for backdrop blur */
+            padding: 4rem 2rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 850px;
+            margin: 0 auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            transition: border 0.4s;
+        }
+        .glass-card:hover { border: 1px solid rgba(241, 213, 146, 0.3); }
+
+        .input-group { display: flex; gap: 15px; margin-top: 35px; justify-content: center; }
+        .input-group input {
+            width: 70%; padding: 20px 25px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.4); color: white; outline: none; font-size: 1rem;
+        }
+        .input-group input:focus { border-color: #F1D592; background: rgba(0,0,0,0.5); }
+
+        .input-group button {
+            padding: 0 40px; border-radius: 18px; border: none; background: var(--gold);
+            font-weight: 700; cursor: pointer; color: #2D0050; transition: 0.4s;
+        }
+        .input-group button:hover { transform: scale(1.05) translateY(-3px); box-shadow: 0 10px 20px rgba(241, 213, 146, 0.3); }
+
+        /* Submitted wishes: small colorful confetti burst animation when sent */
+        .wish-pill {
+            background: var(--glass-strong);
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(241, 213, 146, 0.15);
+            animation: popIn 0.5s ease-out;
+            margin: 10px;
+            transition: 0.3s;
+        }
+        .wish-pill:hover { border: 1px solid #F1D592; box-shadow: 0 0 15px rgba(241, 213, 146, 0.3); }
+
+        @keyframes popIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
+
+        /* Music Toggle UI */
+        .music-btn {
+            position: fixed; bottom: 40px; right: 40px; background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2); width: 60px; height: 60px;
+            border-radius: 50%; cursor: pointer; color: white; z-index: 1000;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: 0.3s; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+        }
+        .music-btn:hover { background: rgba(255,255,255,0.25); transform: rotate(15deg) scale(1.05); }
+
+        @media (max-width: 768px) {
+            .hero-image-container { height: 280px; }
+            .voucher { flex-direction: column; }
+            .voucher-left { border-right: none; border-bottom: 4px dashed #eee; }
+            .input-group { flex-direction: column; align-items: center; }
+            .input-group input { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="fw-canvas"></canvas>
+    <div id="star-container"></div>
+
+    <main>
+        <section class="hero">
+            <div class="hero-image-container" id="heroImg">
+                <img src="https://images.unsplash.com/photo-1467810563316-b5476525c0f9?q=80&w=1200&auto=format" alt="Vibrant New Year Fireworks Skyline">
+            </div>
+            <h1 class="gold-text">Happy New Year!</h1>
+            <p class="main-wish">"May your year be scripted with success, filmed in joy, and edited with love."</p>
+        </section>
+
+        <section class="gift-section">
+            <div class="voucher">
+                <div class="voucher-left">
+                    <div class="voucher-logo">daraz</div>
+                    <div style="font-size: 0.8rem; text-transform: uppercase; font-weight: 600; margin-top: 5px;">Gift Card</div>
+                </div>
+                <div class="voucher-right">
+                    <h4 style="font-size: 1.3rem; color: #333; font-weight: 600;">A small gift from me</h4>
+                    
+                    <p class="voucher-msg">"A voucher of festive joy just for you. Suba Aluth Awuruddak Wewa!"</p>
+                    
+                    <span class="voucher-code" id="vCode" onclick="copyCode()">DARAZ-2026</span>
+                    <p style="font-size: 0.7rem; color: #999; margin-top: 15px; font-style: italic;">Valid until Jan 31st, 2026.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="wish-section">
+            <div class="glass-card">
+                <h2 style="font-family: 'Playfair Display'; font-size: 2.5rem; color: #F1D592;">Reply a Wish</h2>
+                <div class="input-group">
+                    <input type="text" id="wishInput" placeholder="Return the festive joy here...">
+                    <button onclick="submitWish()">SEND REPLY</button>
+                </div>
+                <div id="wishDisplay" style="margin-top: 40px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;"></div>
+            </div>
+        </section>
+    </main>
+
+    <button id="musicToggle" class="music-btn" title="Toggle Ambience">🎵</button>
+
+    <script>
+        // High-Performance Firework Engine (Festive Background)
+        const canvas = document.getElementById('fw-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.onresize = resize;
+        resize();
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y;
+                this.color = color;
+                this.angle = Math.random() * Math.PI * 2;
+                this.velocity = Math.random() * 6 + 2;
+                this.friction = 0.95;
+                this.gravity = 0.12;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.015 + 0.01;
+            }
+            draw() {
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                this.velocity *= this.friction;
+                this.x += Math.cos(this.angle) * this.velocity;
+                this.y += Math.sin(this.angle) * this.velocity + this.gravity;
+                this.alpha -= this.decay;
+            }
+        }
+
+        function createFirework() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * (canvas.height / 2);
+            const color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+            for(let i=0; i<50; i++) particles.push(new Particle(x, y, color));
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(5, 5, 16, 0.15)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            particles = particles.filter(p => p.alpha > 0);
+            particles.forEach(p => { p.update(); p.draw(); });
+            if(Math.random() < 0.04) createFirework(); // Control background firework density
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Stars Logic (Fixed Parallax Background)
+        function initStars() {
+            const container = document.getElementById('star-container');
+            for (let i = 0; i < 110; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.dataset.speed = Math.random() * 0.08 + 0.02;
+                star.style.backgroundColor = Math.random() > 0.5 ? '#F1D592' : '#FFFFFF';
+                container.appendChild(star);
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            const yOffset = window.pageYOffset;
+            document.querySelectorAll('.star').forEach(star => {
+                const y = -(yOffset * star.dataset.speed);
+                star.style.transform = `translateY(${y}px)`;
+            });
+        });
+
+        // Entrance & Intersection Observer (Fade Effect for Hero Image)
+        const observerOptions = { root: null, threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        window.onload = () => {
+            initStars();
+            // Start fade intersection for the hero image
+            observer.observe(document.getElementById('heroImg'));
+        };
+
+        // Voucher logic & Clickable Interaction Animation
+        function copyCode() {
+            const code = document.getElementById('vCode');
+            navigator.clipboard.writeText(code.innerText);
+            
+            // Visual feedback animation
+            code.innerText = "COPIED!";
+            
+            // Trigger Confetti Burst
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.8 },
+                colors: ['#f85606', '#F1D592', '#FFFFFF']
+            });
+            
+            // Reset after delay
+            setTimeout(() => { code.innerText = "DARAZ-2026"; }, 2000);
+        }
+
+        // Interaction: Submit Wish Logic
+        function submitWish() {
+            const input = document.getElementById('wishInput');
+            if (input.value.trim()) {
+                // Confetti burst triggered on screen
+                confetti({
+                    particleCount: 150,
+                    spread: 100,
+                    origin: { y: 0.7 },
+                    colors: ['#F1D592', '#FFFFFF']
+                });
+                
+                // Add Wish Pill to Board
+                const pill = document.createElement('div');
+                pill.className = 'wish-pill';
+                pill.innerText = '✨ ' + input.value;
+                document.getElementById('wishDisplay').prepend(pill);
+                
+                // Reset input
+                input.value = '';
+            }
+        }
+
+        // Music Toggle UI Logic (Logic Only)
+        let playing = false;
+        document.getElementById('musicToggle').onclick = function() {
+            playing = !playing;
+            this.innerText = playing ? '🔊' : '🎵';
+            // Ambient soft fireplaces or lo-fi jazz sound logic would go here
+        };
+    </script>
+</body>
+</html>
